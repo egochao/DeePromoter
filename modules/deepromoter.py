@@ -101,3 +101,5 @@ class DeePromoter(nn.Module):
         x = self.flatten(x)
         x = self.fc(x)
         return x
+
+

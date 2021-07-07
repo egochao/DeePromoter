@@ -55,7 +55,7 @@ class LoadOnehot(Dataset):
         return onehot.float(), self.poslabel[idx]
 
 
-def load_data(data_path, train_potion=0.8, rand_neg=False, batch_size=32, num_cpu=0):
+def load_data(data_path, train_potion=0.8, rand_neg=False, batch_size=32, num_cpu=0, device="cuda"):
     """
     Load all data
     :param data_path: Path to txt file contain promoter (1 DNA promoter on 1 line)
@@ -63,17 +63,13 @@ def load_data(data_path, train_potion=0.8, rand_neg=False, batch_size=32, num_cp
     :param rand_neg: Add random of DNA to negative datset
     :param batch_size: Batch size for loader
     :param num_cpu: Number of CPU perform load data in prallel
+    :param device: Device to load data on
     :return: List of train, val, test dataset for positive and negative datset
     """
     # get dataset
     manual_seed = torch.Generator().manual_seed(42)
-    pos_data = LoadOnehot(data_path)
-    neg_data = LoadOnehot(data_path, is_pos=False, fake=2)
-
-    # add random dataset to negative dataset
-    if rand_neg:
-        neg_data_rand = LoadOnehot(data_path, is_pos=False, fake=1)
-        neg_data = ConcatDataset([neg_data, neg_data_rand])
+    pos_data = LoadOnehot(data_path, device=device)
+    neg_data = LoadOnehot(data_path, is_pos=False, fake=2, device=device)
 
     # calculate the size of train and test dataset
     train_num = int(len(pos_data)*train_potion)
@@ -83,6 +79,11 @@ def load_data(data_path, train_potion=0.8, rand_neg=False, batch_size=32, num_cp
     # split dataset
     train_pos, val_pos, test_pos = random_split(pos_data, split_size, generator=manual_seed)
     train_neg, val_neg, test_neg = random_split(neg_data, split_size, generator=manual_seed)
+
+    # add random dataset to negative dataset(only to train set)
+    if rand_neg:
+        neg_data_rand = LoadOnehot(data_path, is_pos=False, fake=1, device=device)
+        train_neg = ConcatDataset([train_neg, neg_data_rand])
 
     # data loader
     stack_dataset = [train_pos, val_pos, test_pos, train_neg, val_neg, test_neg]
