@@ -8,6 +8,16 @@ from utils import neggen, reader, get_list_kmer, protein2num
 
 class LoadOnehot(Dataset):
     def __init__(self, pathpos, is_pos=True, device="cuda", fake=0, length_pro=300, divide=20, part=8):
+        """
+        Dataset
+        :param pathpos: Path to the txt data file
+        :param is_pos: Control the label for dataset True for 1, False for 0
+        :param device: Device
+        :param fake: 0 for load original txt dataset , 1 for random fake, 2 for faking method as describe in the paper
+        :param length_pro: Input sequence length
+        :param divide: Number of part to break protein into before replace some part with random sequence
+        :param part: Number of part to keep the same when do random subsequence 
+        """
         if is_pos and fake != 0:
             raise Exception("Cant use key word fake on positive dataset")
         self.device = device
@@ -93,3 +103,9 @@ def load_data(data_path, train_potion=0.8, rand_neg=False, batch_size=32, num_cp
         stack_loaders.append(data_loader)
 
     return stack_loaders
+
+
+def load_data_test(data_path, batch_size=32, device="cuda", num_cpu=0):
+    dataset = LoadOnehot(data_path, device=device)
+    data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_cpu)
+    return data_loader
