@@ -1,4 +1,5 @@
 # DeePromoter
+
 Pytorch implementation of [DeePromoter](https://doi.org/10.3389/fgene.2019.00286)
 Active sequence detection for promoter(DNA subsequence regulates transcription initiation of the gene by controlling the binding of RNA polymerase)
 
@@ -10,7 +11,6 @@ Active sequence detection for promoter(DNA subsequence regulates transcription i
 
 - 2021-07-08 : Finish training and testing scripts for DeePromoter
 
-# Training 
 ## Requirements 
 
 - Please install torch==1.9 from https://pytorch.org
@@ -22,7 +22,9 @@ Active sequence detection for promoter(DNA subsequence regulates transcription i
     ```
 
 ## Dataset 
+
 Current supported dataset is:
+
 - [EPDnew](https://epd.epfl.ch//index.php) : A collection of experimentally validated promoters for selected model organisms. Evidence comes from TSS-mapping from high-throughput expreriments such as CAGE and Oligocapping
 
 ## Preprocessing 
@@ -42,7 +44,6 @@ Procedure for create negative dataset as described in paper:
 </p>
 
 ##Training 
-Train your model with. 
 
 ```
 python3 train.py -d data/human/nonTATA/hs_pos_nonTATA.txt --experiment_name human_nonTATA
@@ -57,6 +58,7 @@ The results will be saved in to ./output/experiment_name
 You can do continue training by pass the path to weight by flag -w or --weight
 
 ## Inference 
+
 Prepare your dataset in txt format with each DNA sequence(length 300) on a line
 
 Run inference by 
@@ -70,11 +72,14 @@ Output will be save into file infer_results.txt in the main folder
 ## Implementation Issues
 
 ### Negative sampling
+
 1. In addition to using negative sampling as in the paper described(see Preprocessing) I added a random dataset to help the model generalize.
 
 ### Parallel convolution
+
 1. The author use grid search to find optimal parameters for the network. I used the final set of parameter from the paper.
 Kernel size = [27, 14, 7], and maxpooling with kernel = 6
 
 # References
+
 1. [DeePromoter](https://doi.org/10.3389/fgene.2019.00286) paper
