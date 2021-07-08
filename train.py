@@ -116,7 +116,7 @@ def train(data_path, pretrain=None, exp_name="test", training=True, ker=None, ep
     ic("precision :", precision)
     ic("recall :", recall)
     ic("MCC :", MCC)
-    with open("log.txt", "w") as f:
+    with open(str(exp_folder.joinpath("log.txt")), "w") as f:
         f.write(f"Test precision: {precision}\n")
         f.write(f"Test recall: {recall}\n")
         f.write(f"Test MCC : {MCC}\n")
